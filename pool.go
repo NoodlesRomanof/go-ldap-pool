@@ -2,6 +2,7 @@ package ldappool
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"log"
 	"sync"
@@ -32,8 +33,8 @@ type Pool struct {
 	debug             bool
 	connectionTimeout time.Duration
 	wakeupInterval    time.Duration
-
-	mu sync.Mutex
+	tlsconfig         *tls.Config
+	mu                sync.Mutex
 
 	addr            string
 	bindCredentials *BindCredentials
@@ -45,10 +46,17 @@ type Pool struct {
 	deadConn      chan *PoolConnection
 }
 
-func (p *Pool) open() (*ldap.Conn, error) {
-	conn, err := ldap.DialURL(p.addr, p.opts...)
-	if err != nil {
-		return nil, err
+func (p *Pool) open() (conn *ldap.Conn, err error) {
+	if p.tlsconfig != nil {
+		conn, err = ldap.DialTLS("tcp", p.addr, p.tlsconfig)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		conn, err = ldap.DialURL(p.addr, p.opts...)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if p.bindCredentials != nil {
@@ -185,10 +193,10 @@ waiting:
 }
 
 type PoolOptions struct {
-	Debug           bool
-	URL             string
-	BindCredentials *BindCredentials
-
+	Debug             bool
+	URL               string
+	BindCredentials   *BindCredentials
+	TlsConfig         *tls.Config
 	ConnectionsCount  int
 	ConnectionTimeout time.Duration
 	WakeupInterval    time.Duration
@@ -208,6 +216,7 @@ func NewPool(ctx context.Context, po *PoolOptions) (*Pool, error) {
 	pool := &Pool{
 		debug:             po.Debug,
 		addr:              po.URL,
+		tlsconfig:         po.TlsConfig,
 		conns:             make([]*PoolConnection, connectionsCount),
 		bindCredentials:   po.BindCredentials,
 		availableConn:     make(chan *PoolConnection, connectionsCount),
