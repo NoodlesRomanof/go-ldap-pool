@@ -1,4 +1,4 @@
-module github.com/m-vinc/go-ldap-pool
+module github.com/NoodlesRomanof/go-ldap-pool
 
 go 1.17
 
