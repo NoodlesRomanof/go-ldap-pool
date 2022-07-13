@@ -33,7 +33,7 @@ type Pool struct {
 	debug             bool
 	connectionTimeout time.Duration
 	wakeupInterval    time.Duration
-	tlsconfig         *tls.Config
+	tlsConfig         *tls.Config
 	mu                sync.Mutex
 
 	addr            string
@@ -48,7 +48,7 @@ type Pool struct {
 
 func (p *Pool) open() (conn *ldap.Conn, err error) {
 	if p.tlsconfig != nil {
-		conn, err = ldap.DialTLS("tcp", p.addr, p.tlsconfig)
+		conn, err = ldap.DialTLS("tcp", p.addr, p.tlsConfig)
 		if err != nil {
 			return nil, err
 		}
