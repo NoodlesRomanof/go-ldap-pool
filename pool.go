@@ -47,7 +47,7 @@ type Pool struct {
 }
 
 func (p *Pool) open() (conn *ldap.Conn, err error) {
-	if p.tlsconfig != nil {
+	if p.tlsConfig != nil {
 		conn, err = ldap.DialTLS("tcp", p.addr, p.tlsConfig)
 		if err != nil {
 			return nil, err
