@@ -196,7 +196,7 @@ type PoolOptions struct {
 	Debug             bool
 	URL               string
 	BindCredentials   *BindCredentials
-	TlsConfig         *tls.Config
+	TLSConfig         *tls.Config
 	ConnectionsCount  int
 	ConnectionTimeout time.Duration
 	WakeupInterval    time.Duration
@@ -216,7 +216,7 @@ func NewPool(ctx context.Context, po *PoolOptions) (*Pool, error) {
 	pool := &Pool{
 		debug:             po.Debug,
 		addr:              po.URL,
-		tlsconfig:         po.TlsConfig,
+		tlsConfig:         po.TLSConfig,
 		conns:             make([]*PoolConnection, connectionsCount),
 		bindCredentials:   po.BindCredentials,
 		availableConn:     make(chan *PoolConnection, connectionsCount),
