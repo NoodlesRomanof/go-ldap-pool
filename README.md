@@ -33,6 +33,9 @@ p, err := ldappool.NewPool(context.Background(), &ldappool.PoolOptions{
         Username: "cn=admin,dc=example,dc=fr",
         Password: "toto",
     },
+	//TLS config
+    TLSConfig: tlsconfig,
+
 })
 
 if err != nil {
